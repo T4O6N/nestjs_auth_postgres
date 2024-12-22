@@ -1,6 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
+import { setupSwagger } from './common/swagger/swagger.config';
+import * as cookieParser from 'cookie-parser';
 
 async function main() {
   const app = await NestFactory.create(AppModule);
@@ -9,7 +11,13 @@ async function main() {
     origin: '*',
   };
 
+  app.use(cookieParser());
+
   app.enableCors(corsOptions);
+
+  if (process.env.SWAGGER_ENABLE === 'true') {
+    setupSwagger(app);
+  }
 
   await app.listen(process.env.PORT);
 
